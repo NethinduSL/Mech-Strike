@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Mech Strike — Mech Arena Gaming Channel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <style>
+    :root {
+      --brand-red:#e01c1c;--brand-red-light:#ff3a3a;--brand-red-dark:#9a0f0f;
+      --brand-black:#0a0a0a;--brand-black-card:#1a1a1a;--brand-black-soft:#242424;
+      --bg:var(--brand-black);--bg-card:var(--brand-black-card);--bg-soft:var(--brand-black-soft);
+      --text:#f0f0f0;--text-muted:#888;--accent:var(--brand-red);
+      --accent-glow:rgba(224,28,28,.35);--border:rgba(255,255,255,.07);
+      --panel-bg:#111;--panel-w:280px;
+      --font:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif;
+      --radius:12px;--transition:.3s cubic-bezier(.4,0,.2,1);
+    }
+    [data-theme="light"]{
+      --bg:#f5f5f5;--bg-card:#fff;--bg-soft:#ebebeb;--text:#111;
+      --text-muted:#555;--border:rgba(0,0,0,.08);--panel-bg:#fff;
+      --accent-glow:rgba(224,28,28,.18);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;cursor:url('cursor.png'),auto}
+    body{
+      font-family:var(--font);background:var(--bg);color:var(--text);
+      overflow-x:hidden;transition:background var(--transition),color var(--transition);
+      -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;cursor:url('cursor.png'),auto;
+    }
+    a{color:inherit;text-decoration:none;font-family:inherit;cursor:url('cursor.png'),pointer}
+    button{cursor:url('cursor.png'),pointer}
+    img{max-width:100%;display:block}ul{list-style:none}
+    button,input,select,textarea{font-family:var(--font)}
+    code{font-family:'SF Mono','Fira Code','Roboto Mono',monospace}
+
+    /* LOADER */
+    #loader{position:fixed;inset:0;z-index:9999;background:var(--brand-black);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+    #loader.hidden{opacity:0;pointer-events:none;transition:opacity .6s ease .2s}
+    .loader-img-wrap{width:180px;height:180px;position:relative}
+    .loader-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transform:scale(.85);transition:opacity .4s ease,transform .4s ease;border-radius:12px}
+    .loader-img.active{opacity:1;transform:scale(1)}
+    .loader-brand{font-family:var(--font);font-size:2rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-red);text-shadow:0 0 30px var(--accent-glow)}
+    .loader-bar-wrap{width:220px;height:4px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+    .loader-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--brand-red-dark),var(--brand-red-light));border-radius:99px;transition:width .15s linear}
+    .loader-sub{font-family:var(--font);font-size:.75rem;letter-spacing:.15em;color:var(--text-muted);text-transform:uppercase}
+
+    /* PANEL */
+    #panel-overlay{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity var(--transition)}
+    #panel-overlay.open{opacity:1;pointer-events:all}
+    #side-panel{position:fixed;left:0;top:0;bottom:0;width:var(--panel-w);max-width:85vw;background:var(--panel-bg);border-right:1px solid var(--border);z-index:800;transform:translateX(-100%);transition:transform var(--transition);display:flex;flex-direction:column;padding:24px 0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    #side-panel.open{transform:translateX(0)}
+    .panel-header{padding:0 24px 24px;border-bottom:1px solid var(--border)}
+    .panel-logo{font-family:var(--font);font-size:1.4rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .panel-logo span{color:var(--text)}
+    .panel-tagline{font-family:var(--font);font-size:.7rem;color:var(--text-muted);margin-top:4px;letter-spacing:.1em;text-transform:uppercase}
+    .panel-nav{flex:1;padding:20px 0}
+    .panel-nav li a{display:flex;align-items:center;gap:14px;padding:12px 24px;font-family:var(--font);font-size:.9rem;font-weight:500;color:var(--text-muted);transition:color var(--transition),background var(--transition);border-left:3px solid transparent}
+    .panel-nav li a:hover,.panel-nav li a.active{color:var(--accent);background:rgba(224,28,28,.07);border-left-color:var(--accent)}
+    .panel-nav li a .material-icons{font-size:1.1rem}
+
+    /* Panel Contact Cards */
+    .panel-contact{padding:16px 24px;border-top:1px solid var(--border)}
+    .panel-contact-title{font-family:var(--font);font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+    .panel-contact-title .material-icons{font-size:.85rem}
+    .panel-contact-item{display:flex;align-items:center;gap:10px;padding:8px 0;font-family:var(--font);font-size:.78rem;color:var(--text-muted)}
+    .panel-contact-item .material-icons{font-size:.9rem;color:var(--accent)}
+    .panel-contact-item a{color:var(--brand-red-light);transition:color var(--transition)}
+    .panel-contact-item a:hover{color:var(--text)}
+
+    .panel-socials{padding:16px 24px 0;border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap}
+    .panel-socials a{width:38px;height:38px;border-radius:8px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-family:var(--font);font-size:.9rem;font-weight:700;transition:background var(--transition),color var(--transition)}
+    .panel-socials a:hover{background:var(--accent);color:#fff}
+
+    /* NAVBAR */
+    #navbar{position:fixed;top:0;left:0;right:0;z-index:600;height:64px;display:flex;align-items:center;padding:0 16px;background:rgba(10,10,10,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);gap:10px;transition:background var(--transition)}
+    [data-theme="light"] #navbar{background:rgba(245,245,245,.9)}
+    .nav-menu-btn{background:none;border:none;color:var(--text);padding:4px;display:flex;align-items:center;transition:color var(--transition);flex-shrink:0}
+    .nav-menu-btn:hover{color:var(--accent)}
+    .nav-menu-btn .material-icons{font-size:1.5rem}
+    .nav-logo{font-family:var(--font);font-size:1.2rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nav-logo span{color:var(--text)}
+    .nav-links{display:flex;gap:2px;align-items:center}
+    .nav-links a{font-family:var(--font);font-size:.78rem;font-weight:600;padding:6px 10px;border-radius:8px;color:var(--text-muted);transition:all var(--transition);letter-spacing:.04em;white-space:nowrap;display:flex;align-items:center;gap:4px}
+    .nav-links a .material-icons{font-size:.9rem}
+    .nav-links a:hover{color:var(--accent);background:rgba(224,28,28,.08)}
+    .nav-right{display:flex;gap:6px;align-items:center;flex-shrink:0}
+    #theme-btn{background:var(--bg-soft);border:1px solid var(--border);border-radius:99px;padding:6px 12px;display:flex;align-items:center;gap:5px;color:var(--text);font-family:var(--font);font-size:.78rem;font-weight:600;transition:all var(--transition)}
+    #theme-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+    #theme-btn .material-icons{font-size:1rem}
+    .nav-sub-btn{display:inline-flex;align-items:center;gap:5px;background:var(--accent);color:#fff;padding:7px 14px;border-radius:var(--radius);font-family:var(--font);font-weight:700;font-size:.78rem;transition:all var(--transition);box-shadow:0 4px 24px var(--accent-glow);white-space:nowrap}
+    .nav-sub-btn:hover{background:var(--brand-red-light);transform:translateY(-1px)}
+    .nav-sub-btn .material-icons{font-size:.95rem}
+
+    /* LAYOUT */
+    main{margin-top:64px}.container{max-width:1200px;margin:0 auto;padding:0 20px}section{padding:80px 0}
+
+    /* HERO */
+    #hero{min-height:calc(100vh - 64px);display:flex;align-items:center;position:relative;overflow:hidden;padding:0}
+    .hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 70% 50%,rgba(224,28,28,.18) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 20% 80%,rgba(154,15,15,.12) 0%,transparent 60%),var(--bg)}
+
+    /* FREQUENCY POLYGON */
+    #freq-poly-bg{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
+    .fp-area-path{fill:url(#fp-grad);opacity:0}
+    .fp-glow-path{fill:none;stroke:rgba(224,28,28,.2);stroke-width:10;stroke-linecap:square;stroke-linejoin:miter}
+    .fp-line-path{fill:none;stroke:rgba(224,28,28,.2);stroke-width:2.5;stroke-linecap:square;stroke-linejoin:miter;filter:drop-shadow(0 0 6px rgba(224,28,28,.2))}
+    .fp-dot{fill:rgba(224,28,28,.2);filter:drop-shadow(0 0 4px rgba(224,28,28,.2))}
+    .fp-dot-outer{fill:none;stroke:rgba(224,28,28,.12);stroke-width:2}
+
+    /* Dot hover tooltip */
+    .fp-dot-hover{fill:transparent;stroke:none;cursor:url('cursor.png'),pointer}
+    .fp-tooltip{
+      position:fixed;z-index:100;pointer-events:none;
+      background:var(--bg-card);border:1px solid var(--border);border-radius:10px;
+      box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;
+      opacity:0;transition:opacity .2s ease;width:200px;
+    }
+    .fp-tooltip.visible{opacity:1}
+    .fp-tooltip img{width:100%;aspect-ratio:16/9;object-fit:cover}
+    .fp-tooltip-info{padding:8px 10px;font-family:var(--font);font-size:.7rem;color:var(--text-muted)}
+    .fp-tooltip-title{font-size:.75rem;font-weight:700;color:var(--text);margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+    .fp-tooltip-views{color:var(--accent);font-weight:600}
+
+    .hero-content{position:relative;z-index:2;padding:80px 20px;max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(224,28,28,.12);border:1px solid rgba(224,28,28,.3);border-radius:99px;padding:6px 16px;font-family:var(--font);font-size:.75rem;font-weight:600;color:var(--brand-red-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;animation:fadeUp .6s ease both}
+    .hero-badge .material-icons{font-size:.9rem}
+    .hero-title{font-family:var(--font);font-size:clamp(2.2rem,6vw,5rem);font-weight:600;line-height:1.05;letter-spacing:-.02em;animation:fadeUp .6s .1s ease both}
+    .hero-title .strike{color:var(--accent);text-shadow:0 0 40px var(--accent-glow)}
+    .hero-actions{margin-top:36px;display:flex;gap:14px;flex-wrap:wrap;animation:fadeUp .6s .3s ease both}
+    .hero-live-stats{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;animation:fadeUp .6s .4s ease both}
+    .hero-stat-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(224,28,28,.08);border:1px solid rgba(224,28,28,.2);border-radius:99px;padding:8px 16px;font-family:var(--font);font-size:.82rem;font-weight:700}
+    .hero-stat-pill .material-icons{font-size:.95rem;color:var(--accent)}
+    .hero-stat-pill .pill-num{color:var(--accent)}
+    .hero-stat-pill .pill-label{color:var(--text-muted);font-weight:400}
+    .btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;padding:14px 28px;border-radius:var(--radius);font-family:var(--font);font-weight:700;font-size:.9rem;letter-spacing:.04em;transition:all var(--transition);box-shadow:0 4px 24px var(--accent-glow)}
+    .btn-primary:hover{background:var(--brand-red-light);transform:translateY(-2px);box-shadow:0 8px 32px var(--accent-glow)}
+    .btn-ghost{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--text);padding:14px 28px;border-radius:var(--radius);font-family:var(--font);font-weight:600;font-size:.9rem;border:1px solid var(--border);transition:all var(--transition)}
+    .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-primary .material-icons,.btn-ghost .material-icons{font-size:1.1rem}
+    .hero-visual{animation:fadeUp .6s .2s ease both}
+
+    .channel-avatar-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:20px}
+    .channel-avatar{width:280px;height:280px;border-radius:50%;border:5px solid var(--accent);box-shadow:0 0 80px var(--accent-glow),0 0 0 12px rgba(224,28,28,.1);object-fit:cover;animation:float 5s ease-in-out infinite}
+    .channel-avatar-placeholder{width:280px;height:280px;border-radius:50%;border:5px solid var(--accent);box-shadow:0 0 80px var(--accent-glow);background:var(--bg-soft);display:flex;align-items:center;justify-content:center;animation:float 5s ease-in-out infinite}
+    .channel-avatar-placeholder .material-icons{font-size:5rem;color:var(--accent)}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+    /* STATS */
+    #stats{padding:60px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg-card)}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+    .stat-card{padding:28px 16px;text-align:center;position:relative}
+    .stat-card+.stat-card::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:1px;background:var(--border)}
+    .stat-num{font-family:var(--font);font-size:2.4rem;font-weight:900;color:var(--accent);line-height:1;text-shadow:0 0 20px var(--accent-glow);transition:all .5s ease}
+    .stat-label{font-family:var(--font);font-size:.72rem;color:var(--text-muted);margin-top:8px;letter-spacing:.1em;text-transform:uppercase}
+    .stat-icon{font-size:1.4rem;color:var(--accent);margin-bottom:8px}
+    .stat-loading{animation:pulse 1.5s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+    .stats-live-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--font);font-size:.7rem;font-weight:600;color:#22c55e;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:99px;padding:4px 12px;margin-bottom:20px}
+    .live-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 1.2s ease-in-out infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+    /* SECTION HEADER */
+    .sec-header{margin-bottom:48px}
+    .sec-tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--font);font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+    .sec-tag::before{content:'';display:block;width:20px;height:2px;background:var(--accent);border-radius:99px}
+    .sec-title{font-family:var(--font);font-size:clamp(1.6rem,4vw,2.8rem);font-weight:800;line-height:1.15;letter-spacing:-.02em}
+    .sec-desc{font-family:var(--font);margin-top:12px;font-size:.95rem;color:var(--text-muted);max-width:520px}
+
+    /* VIDEOS */
+    #videos{background:var(--bg)}
+    .videos-grid{display:grid;gap:24px}
+    .video-card{background:var(--bg-card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;transition:transform var(--transition),box-shadow var(--transition),border-color var(--transition)}
+    .video-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.4),0 0 0 1px rgba(224,28,28,.2);border-color:rgba(224,28,28,.25)}
+    .video-embed{position:relative;width:100%;padding-bottom:56.25%;background:#000}
+    .video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+    .video-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg-soft)}
+    .video-placeholder .material-icons{font-size:3rem;color:var(--accent);filter:drop-shadow(0 0 12px var(--accent-glow))}
+    .video-placeholder-label{font-family:var(--font);font-size:.75rem;color:var(--text-muted);letter-spacing:.08em;font-weight:600}
+    .video-thumb-wrap{position:absolute;inset:0;overflow:hidden}
+    .video-thumb-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
+    .video-thumb-wrap:hover img{transform:scale(1.05)}
+    .video-play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35)}
+    .video-play-btn .material-icons{font-size:3.5rem;color:#fff;filter:drop-shadow(0 0 12px rgba(224,28,28,.6));transition:transform .2s}
+    .video-thumb-wrap:hover .video-play-btn .material-icons{transform:scale(1.1)}
+    .video-duration{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.8);color:#fff;font-family:var(--font);font-size:.72rem;font-weight:600;padding:2px 6px;border-radius:4px}
+    .video-shorts-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.06em}
+    .video-info{padding:14px 16px 18px}
+    .video-title{font-family:var(--font);font-size:.92rem;font-weight:700;line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .video-meta{display:flex;gap:12px;font-family:var(--font);font-size:.73rem;color:var(--text-muted);flex-wrap:wrap}
+    .video-meta span{display:flex;align-items:center;gap:4px}
+    .video-meta .material-icons{font-size:.85rem}
+
+    /* ABOUT */
+    #about{background:var(--bg-card)}
+    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+    .about-left-col{display:flex;flex-direction:column;gap:28px;align-self:stretch}
+    .about-img-wrap{position:relative}
+    .about-hero-img{width:100%;height:280px;border-radius:20px;border:2px solid rgba(224,28,28,.25);box-shadow:0 20px 60px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;background:var(--bg-soft);overflow:hidden}
+    .about-hero-img img{width:100%;height:100%;object-fit:cover}
+    .about-hero-img .material-icons{font-size:4rem;color:var(--accent);opacity:.5}
+    .about-badge{position:absolute;bottom:-16px;right:-16px;background:var(--accent);border-radius:12px;padding:16px 20px;box-shadow:0 8px 32px var(--accent-glow)}
+    .about-badge-num{font-family:var(--font);font-size:1.6rem;font-weight:900;color:#fff;line-height:1}
+    .about-badge-label{font-family:var(--font);font-size:.65rem;color:rgba(255,255,255,.75);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+    .about-features{margin-top:24px;display:flex;flex-direction:column;gap:12px}
+    .about-feat{display:flex;align-items:flex-start;gap:14px;background:var(--bg-soft);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:border-color var(--transition)}
+    .about-feat:hover{border-color:rgba(224,28,28,.25)}
+    .feat-icon{width:40px;height:40px;flex-shrink:0;background:rgba(224,28,28,.1);border:1px solid rgba(224,28,28,.25);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--accent)}
+    .feat-icon .material-icons{font-size:1.1rem}
+    .feat-text{font-family:var(--font);font-size:.85rem;color:var(--text-muted);line-height:1.5}
+    .feat-text strong{color:var(--text);display:block;margin-bottom:2px;font-size:.88rem}
+
+    /* VIEWS CHART */
+    .views-chart{background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;display:flex;flex-direction:column;flex:1}
+    .views-chart-title{font-family:var(--font);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+    .views-chart-title .material-icons{font-size:.9rem}
+    .chart-bars{display:flex;align-items:flex-end;gap:5px;flex:1;min-height:120px}
+    .chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+    .chart-bar{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(to top,var(--brand-red-dark),var(--brand-red-light));min-height:4px;height:0%;transition:height 1s cubic-bezier(.4,0,.2,1);position:relative}
+    .chart-bar:hover{filter:brightness(1.3)}
+    .chart-bar-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:var(--font);font-size:.68rem;white-space:nowrap;color:var(--text);pointer-events:none;z-index:10}
+    .chart-bar:hover .chart-bar-tooltip{display:block}
+    .chart-bar-label{font-family:var(--font);font-size:.55rem;color:var(--text-muted);text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;flex-shrink:0}
+
+    /* INFO CARDS */
+    .info-cards{display:grid;grid-template-columns:1fr;gap:14px;margin-top:24px}
+    .info-card{background:var(--bg-soft);border:1px solid var(--border);border-radius:10px;padding:14px 18px;font-family:var(--font);font-size:.85rem;color:var(--text-muted);line-height:1.6;word-wrap:break-word;overflow-wrap:break-word;transition:border-color var(--transition)}
+    .info-card:hover{border-color:rgba(224,28,28,.2)}
+    .info-card-title{font-family:var(--font);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .info-card-title .material-icons{font-size:.9rem}
+    .info-card code{background:rgba(224,28,28,.1);border-radius:4px;padding:1px 6px;font-size:.75rem;color:var(--brand-red-light)}
+
+    /* TEAM CARDS */
+    .team-section{margin-top:40px}
+    .team-section-title{font-family:var(--font);font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+    .team-section-title .material-icons{font-size:1rem}
+    .team-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .team-card{background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;text-align:center;transition:border-color var(--transition),box-shadow var(--transition)}
+    .team-card:hover{border-color:rgba(224,28,28,.3);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+    .team-avatar{width:90px;height:90px;border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 30px var(--accent-glow);object-fit:cover;margin:0 auto 14px}
+    .team-avatar-placeholder{width:90px;height:90px;border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 30px var(--accent-glow);background:var(--bg-card);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+    .team-avatar-placeholder .material-icons{font-size:2.2rem;color:var(--accent)}
+    .team-name{font-family:var(--font);font-size:1rem;font-weight:800;color:var(--text);margin-bottom:4px}
+    .team-role{font-family:var(--font);font-size:.72rem;color:var(--brand-red-light);font-weight:600;background:rgba(224,28,28,.12);display:inline-block;padding:2px 10px;border-radius:99px;margin-bottom:14px}
+    .team-socials{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+    .team-social-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:8px;font-family:var(--font);font-size:.75rem;font-weight:600;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);transition:all var(--transition)}
+    .team-social-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(224,28,28,.06)}
+    .team-social-btn .material-icons{font-size:.9rem;color:var(--accent)}
+    .team-social-btn.ig{border-color:rgba(225,48,108,.3)}
+    .team-social-btn.ig:hover{border-color:#e1306c;color:#e1306c;background:rgba(225,48,108,.06)}
+    .team-social-btn.ig .material-icons{color:#e1306c}
+    .team-social-btn.wa{border-color:rgba(37,211,102,.3)}
+    .team-social-btn.wa:hover{border-color:#25d366;color:#25d366;background:rgba(37,211,102,.06)}
+    .team-social-btn.wa .material-icons{color:#25d366}
+
+    /* GALLERY */
+    #gallery{background:var(--bg)}
+    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .gallery-yt-item{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);aspect-ratio:9/16;background:var(--bg-soft);position:relative}
+    .gallery-yt-item img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+    .gallery-yt-item:hover img{transform:scale(1.06)}
+    .gallery-yt-item::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(224,28,28,.3) 0%,transparent 60%);opacity:0;transition:opacity var(--transition)}
+    .gallery-yt-item:hover::after{opacity:1}
+    .gallery-shorts-label{position:absolute;top:8px;left:8px;z-index:2;background:var(--accent);color:#fff;font-family:var(--font);font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.06em}
+
+    /* FOOTER */
+    footer{background:var(--brand-black);border-top:1px solid var(--border);padding:60px 0 40px}
+    [data-theme="light"] footer{background:var(--bg-card)}
+    .footer-inner{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:48px;margin-bottom:48px}
+    .footer-logo{font-family:var(--font);font-size:1.5rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+    .footer-logo span{color:var(--text)}
+    .footer-about{font-family:var(--font);font-size:.85rem;color:var(--text-muted);line-height:1.6}
+    .footer-col h4{font-family:var(--font);font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+    .footer-col ul li{margin-bottom:10px}
+    .footer-col ul li a{font-family:var(--font);font-size:.85rem;color:var(--text-muted);transition:color var(--transition);display:flex;align-items:center;gap:6px}
+    .footer-col ul li a .material-icons{font-size:.9rem}
+    .footer-col ul li a:hover{color:var(--accent)}
+    .footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;align-items:center;justify-content:space-between;font-family:var(--font);font-size:.78rem;color:var(--text-muted);flex-wrap:wrap;gap:12px}
+    .footer-socials{display:flex;gap:10px}
+    .footer-socials a{width:36px;height:36px;border-radius:8px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-family:var(--font);font-size:.8rem;font-weight:700;transition:all var(--transition)}
+    .footer-socials a:hover{background:var(--accent);color:#fff}
+
+    /* ANIMATIONS */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--brand-red-dark);border-radius:99px}
+
+    /* RESPONSIVE */
+    @media(max-width:1024px){
+      .hero-content{gap:40px;padding:60px 20px}
+      .about-grid{gap:40px}.footer-inner{gap:32px}
+    }
+    @media(max-width:900px){
+      .hero-content{grid-template-columns:1fr;gap:40px;text-align:center}
+      .hero-visual{order:-1;max-width:320px;margin:0 auto}
+      .hero-actions{justify-content:center}.hero-live-stats{justify-content:center}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      .stat-card:nth-child(3)::before{display:none}
+      .about-grid{grid-template-columns:1fr}
+      .about-left-col{display:contents}
+      /* HIDE bar chart on mobile */
+      .views-chart{display:none!important}
+      .footer-inner{grid-template-columns:1fr 1fr}
+      .nav-links{display:none}
+      .channel-avatar,.channel-avatar-placeholder{width:220px;height:220px}
+      .gallery-grid{grid-template-columns:repeat(3,1fr)}
+      .team-grid{grid-template-columns:1fr 1fr}
+      /* About image smaller on tablet */
+      .about-hero-img{height:200px}
+    }
+    @media(max-width:700px){
+      .gallery-grid{grid-template-columns:repeat(2,1fr)}
+      .footer-inner{grid-template-columns:1fr}
+      section{padding:60px 0}
+      .about-hero-img{height:160px}
+    }
+    @media(max-width:600px){
+      #navbar{padding:0 10px;gap:6px}
+      .nav-logo{font-size:1rem}
+      .nav-sub-btn .sub-text{display:none}.nav-sub-btn{padding:7px 9px}
+      #theme-btn{padding:6px 8px}#theme-btn .theme-label-text{display:none}
+      .stats-grid{grid-template-columns:1fr 1fr}
+      .stat-num{font-size:1.6rem}.stat-card{padding:20px 12px}
+      .videos-grid{grid-template-columns:1fr!important}
+      .hero-content{padding:40px 16px}
+      .hero-title{font-size:clamp(2rem,8vw,3rem)}
+      .hero-stat-pill{padding:6px 12px;font-size:.75rem}
+      .container{padding:0 16px}
+      .btn-primary,.btn-ghost{padding:12px 20px;font-size:.84rem}
+      .about-badge{bottom:-12px;right:0;padding:12px 16px}
+      .about-badge-num{font-size:1.3rem}
+      .channel-avatar,.channel-avatar-placeholder{width:180px;height:180px}
+      .info-card{padding:12px 14px;font-size:.8rem}
+      .info-card code{font-size:.7rem}
+      .team-grid{grid-template-columns:1fr}
+      .team-card{padding:20px 16px}
+      .team-avatar,.team-avatar-placeholder{width:75px;height:75px}
+      .sec-title{font-size:clamp(1.3rem,5vw,1.8rem)}
+      .about-hero-img{height:140px;border-radius:14px}
+    }
+    @media(max-width:420px){
+      .hero-title{font-size:2rem}
+      .hero-actions{flex-direction:column;align-items:center}
+      .hero-actions .btn-primary,.hero-actions .btn-ghost{width:100%;justify-content:center}
+      .hero-stat-pill{font-size:.7rem;padding:5px 10px}
+      .hero-stat-pill .pill-label{display:none}
+      .stat-num{font-size:1.4rem}.stat-label{font-size:.65rem}
+      .gallery-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+      .sec-title{font-size:1.3rem}
+      .channel-avatar,.channel-avatar-placeholder{width:150px;height:150px}
+      .loader-img-wrap{width:130px;height:130px}.loader-brand{font-size:1.5rem}
+      .team-socials{flex-direction:column;align-items:center}
+      .about-hero-img{height:120px;border-radius:12px}
+    }
+    @media(max-width:340px){
+      .gallery-grid{grid-template-columns:1fr}
+      .stats-grid{grid-template-columns:1fr}
+      .stat-card+.stat-card::before{display:none}
+    }
+    @media(hover:none){
+      .video-card:hover{transform:none;box-shadow:none}
+      .video-thumb-wrap:hover img{transform:none}
+      .gallery-yt-item:hover img{transform:none}
+      .gallery-yt-item:hover::after{opacity:0}
+      /* Hide custom cursor on touch */
+      html,body,a,button{cursor:auto!important}
+    }
+    iframe{max-width:100%}
+    @supports(padding:env(safe-area-inset-bottom)){
+      footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+      #navbar{padding-left:calc(10px + env(safe-area-inset-left));padding-right:calc(10px + env(safe-area-inset-right))}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-img-wrap">
+      <img src="mechs/1.png" class="loader-img" alt="" onerror="this.style.display='none'"/>
+      <img src="mechs/2.jpg" class="loader-img" alt="" onerror="this.style.display='none'"/>
+      <img src="mechs/3.jpg" class="loader-img" alt="" onerror="this.style.display='none'"/>
+      <img src="mechs/4.jpg" class="loader-img" alt="" onerror="this.style.display='none'"/>
+      <img src="mechs/5.jpg" class="loader-img" alt="" onerror="this.style.display='none'"/>
+      <img src="mechs/6.jpg" class="loader-img" alt="" onerror="this.style.display='none'"/>
+    </div>
+    <div class="loader-brand">Mech<span style="color:#fff">Strike</span></div>
+    <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
+    <div class="loader-sub">Loading…</div>
+  </div>
+
+  <!-- Dot hover tooltip -->
+  <div class="fp-tooltip" id="fp-tooltip">
+    <img id="fp-tooltip-img" src="" alt=""/>
+    <div class="fp-tooltip-info">
+      <div class="fp-tooltip-title" id="fp-tooltip-title"></div>
+      <div class="fp-tooltip-views" id="fp-tooltip-views"></div>
+    </div>
+  </div>
+
+  <div id="panel-overlay" onclick="closePanel()"></div>
+
+  <!-- SIDE PANEL with contact cards -->
+  <nav id="side-panel">
+    <div class="panel-header">
+      <div class="panel-logo">Mech<span>Strike</span></div>
+      <div class="panel-tagline">Mech Arena Gaming</div>
+    </div>
+    <ul class="panel-nav">
+      <li><a href="#hero" class="active" onclick="closePanel()"><span class="material-icons">home</span>Home</a></li>
+      <li><a href="#stats" onclick="closePanel()"><span class="material-icons">bar_chart</span>Stats</a></li>
+      <li><a href="#videos" onclick="closePanel()"><span class="material-icons">smart_display</span>Videos</a></li>
+      <li><a href="#about" onclick="closePanel()"><span class="material-icons">info</span>About</a></li>
+      <li><a href="#gallery" onclick="closePanel()"><span class="material-icons">photo_library</span>Shorts</a></li>
+      <li><a href="promo.html" onclick="closePanel()"><span class="material-icons">redeem</span>Promo Codes</a></li>
+      <li><a href="https://youtube.com/@mechstrike" target="_blank" onclick="closePanel()"><span class="material-icons">subscriptions</span>Subscribe</a></li>
+    </ul>
+    <!-- Panel Contact Cards -->
+    <div class="panel-contact">
+      <div class="panel-contact-title"><span class="material-icons">contact_mail</span>Contact Us</div>
+      <div class="panel-contact-item">
+        <span class="material-icons">email</span>
+        <a href="mailto:mechstrikesl@gmail.com">mechstrikesl@gmail.com</a>
+      </div>
+      <div class="panel-contact-item">
+        <span class="material-icons">forum</span>
+        <a href="https://discord.com/users/939791412201934889" target="_blank">Discord</a>
+      </div>
+      <div class="panel-contact-item">
+        <span class="material-icons">photo_camera</span>
+        <a href="https://instagram.com/nethindu_thaminda" target="_blank">Instagram</a>
+      </div>
+      <div class="panel-contact-item">
+        <span class="material-icons">chat</span>
+        <a href="https://wa.me/+94775686166" target="_blank">WhatsApp</a>
+      </div>
+    </div>
+    <div class="panel-socials">
+      <a href="https://youtube.com/@mechstrike" target="_blank" title="YouTube">YT</a>
+      <a href="https://discord.com/users/939791412201934889" target="_blank" title="Discord">DC</a>
+      <a href="https://instagram.com/nethindu_thaminda" target="_blank" title="Instagram">IG</a>
+      <a href="https://tiktok.com" target="_blank" title="TikTok">TK</a>
+    </div>
+  </nav>
+
+  <!-- NAVBAR -->
+  <header id="navbar">
+    <button class="nav-menu-btn" onclick="togglePanel()" aria-label="Menu">
+      <span class="material-icons">menu</span>
+    </button>
+    <div class="nav-logo">Mech<span>Strike</span></div>
+    <nav class="nav-links">
+      <a href="#hero"><span class="material-icons">home</span>Home</a>
+      <a href="#videos"><span class="material-icons">smart_display</span>Videos</a>
+      <a href="#about"><span class="material-icons">info</span>About</a>
+      <a href="#gallery"><span class="material-icons">photo_library</span>Shorts</a>
+      <a href="promo.html"><span class="material-icons">redeem</span>Promos</a>
+    </nav>
+    <div class="nav-right">
+      <button id="theme-btn" onclick="toggleTheme()">
+        <span class="material-icons" id="theme-icon">dark_mode</span>
+        <span class="theme-label-text" id="theme-label">Light</span>
+      </button>
+      <a href="https://youtube.com/@mechstrike" target="_blank" class="nav-sub-btn">
+        <span class="material-icons">subscriptions</span><span class="sub-text">Subscribe</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section id="hero">
+      <div class="hero-bg"></div>
+      <svg id="freq-poly-bg" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="fp-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e01c1c" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#e01c1c" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path id="fp-area" class="fp-area-path" d=""/>
+        <path id="fp-glow" class="fp-glow-path" d=""/>
+        <path id="fp-line" class="fp-line-path" d=""/>
+        <g id="fp-dots"></g>
+      </svg>
+      <div class="hero-content">
+        <div>
+          <div class="hero-badge"><span class="material-icons">sports_esports</span>Mech Arena Gaming</div>
+          <h1 class="hero-title">Welcome to<br/><span class="strike">Mech Strike</span></h1>
+          <div class="hero-live-stats">
+            <div class="hero-stat-pill"><span class="material-icons">people</span><span class="pill-num" id="hero-subs">Loading…</span><span class="pill-label">Subscribers</span></div>
+            <div class="hero-stat-pill"><span class="material-icons">smart_display</span><span class="pill-num" id="hero-vids">—</span><span class="pill-label">Videos</span></div>
+          </div>
+          <div class="hero-actions">
+            <a href="https://youtube.com/@mechstrike" target="_blank" class="btn-primary"><span class="material-icons">play_circle</span>Watch Videos</a>
+            <a href="promo.html" class="btn-ghost"><span class="material-icons">redeem</span>Promo Codes</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="channel-avatar-wrap">
+            <img src="logo.png" class="channel-avatar" alt="MechStrike" onerror="this.outerHTML='<div class=\'channel-avatar-placeholder\'><span class=\'material-icons\'>smart_display</span></div>'"/>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section id="stats">
+      <div class="container">
+        <div style="text-align:center;margin-bottom:8px;"><span class="stats-live-badge"><span class="live-dot"></span>Live Channel Stats</span></div>
+        <div class="stats-grid">
+          <div class="stat-card reveal"><div class="stat-icon"><span class="material-icons">people</span></div><div class="stat-num stat-loading" id="sub-count">—</div><div class="stat-label">Subscribers</div></div>
+          <div class="stat-card reveal"><div class="stat-icon"><span class="material-icons">visibility</span></div><div class="stat-num stat-loading" id="view-count">—</div><div class="stat-label">Total Views</div></div>
+          <div class="stat-card reveal"><div class="stat-icon"><span class="material-icons">smart_display</span></div><div class="stat-num stat-loading" id="video-count">—</div><div class="stat-label">Videos</div></div>
+          <div class="stat-card reveal"><div class="stat-icon"><span class="material-icons">sports_esports</span></div><div class="stat-num" style="font-size:1.4rem;">Mech Arena</div><div class="stat-label">Main Game</div></div>
+        </div>
+        <p id="stats-status" style="font-size:.75rem;color:var(--text-muted);margin-top:16px;text-align:center;"></p>
+      </div>
+    </section>
+
+    <!-- VIDEOS -->
+    <section id="videos">
+      <div class="container">
+        <div class="sec-header reveal">
+          <div class="sec-tag"><span class="material-icons" style="font-size:.8rem;">smart_display</span>Latest Content</div>
+          <h2 class="sec-title">Featured Videos</h2>
+          <p class="sec-desc">The latest Mech Arena battles, guides, and highlights.</p>
+        </div>
+        <div class="videos-grid" id="videos-grid">
+          <div class="video-card reveal"><div class="video-embed"><div class="video-placeholder"><span class="material-icons">smart_display</span><div class="video-placeholder-label">Loading videos…</div></div></div><div class="video-info"><div class="video-title">Fetching from YouTube…</div><div class="video-meta"><span><span class="material-icons">schedule</span>Just a moment</span></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-left-col">
+            <div class="about-img-wrap reveal">
+              <div class="about-hero-img" id="about-hero-img">
+                <span class="material-icons">sports_esports</span>
+              </div>
+              <div class="about-badge"><div class="about-badge-num" id="about-badge-num">—</div><div class="about-badge-label">Subscribers</div></div>
+            </div>
+            <div class="views-chart reveal" id="views-chart">
+              <div class="views-chart-title"><span class="material-icons">bar_chart</span>Latest Video Views</div>
+              <div class="chart-bars" id="chart-bars">
+                <div style="color:var(--text-muted);font-size:.78rem;display:flex;align-items:center;gap:8px;"><span class="material-icons" style="font-size:1rem;">hourglass_empty</span>Loading…</div>
+              </div>
+            </div>
+          </div>
+          <div class="about-text reveal">
+            <div class="sec-tag"><span class="material-icons" style="font-size:.8rem;">info</span>About Us</div>
+            <h2 class="sec-title">Built for Mech Arena Warriors</h2>
+            <p style="margin-top:16px;font-family:var(--font);font-size:.92rem;color:var(--text-muted);line-height:1.7;">
+              <strong style="color:var(--text)">Mech Strike</strong> is your home for Mech Arena — intense battles, epic moments, and strategic gameplay all in one place.
+            </p>
+            <div class="about-features">
+              <div class="about-feat"><div class="feat-icon"><span class="material-icons">sports_esports</span></div><div class="feat-text"><strong>🎮 Gameplay &amp; Tips</strong>Pro strategies, tips and tricks for every player level.</div></div>
+              <div class="about-feat"><div class="feat-icon"><span class="material-icons">bolt</span></div><div class="feat-text"><strong>⚡ Events &amp; Shorts</strong>Quick highlights, new features, and promo code drops.</div></div>
+              <div class="about-feat"><div class="feat-icon"><span class="material-icons">notifications_active</span></div><div class="feat-text"><strong>🔔 Currency &amp; ECR Alerts</strong>New weapons and mechs available for in-game currency.</div></div>
+              <div class="about-feat"><div class="feat-icon"><span class="material-icons">redeem</span></div><div class="feat-text"><strong>🎁 Promo Codes</strong>Latest working promo codes updated regularly.</div></div>
+            </div>
+            <div class="info-cards">
+              <div class="info-card">
+                <div class="info-card-title"><span class="material-icons">gamepad</span>Our Mech Arena IDs</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div><span class="material-icons" style="font-size:.8rem;vertical-align:middle;color:var(--accent);">person</span> Soniru@BOT — <code>61254608</code></div>
+                  <div><span class="material-icons" style="font-size:.8rem;vertical-align:middle;color:var(--accent);">smart_toy</span> EBot — <code>60786601</code></div>
+                  <div><span class="material-icons" style="font-size:.8rem;vertical-align:middle;color:var(--accent);">badge</span> Plarium ID — <code>98895844</code></div>
+                </div>
+              </div>
+              <div class="info-card"><div class="info-card-title"><span class="material-icons">calendar_today</span>Upload Schedule</div><span class="material-icons" style="font-size:.85rem;vertical-align:middle;color:var(--accent);">schedule</span> New video every week (when possible)</div>
+              <div class="info-card">
+                <div class="info-card-title"><span class="material-icons">mail</span>Contact Us</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div><span class="material-icons" style="font-size:.85rem;vertical-align:middle;color:var(--accent);">email</span> <a href="mailto:mechstrikesl@gmail.com" style="color:var(--brand-red-light)">mechstrikesl@gmail.com</a></div>
+                  <div><span class="material-icons" style="font-size:.85rem;vertical-align:middle;color:var(--accent);">forum</span> Discord Community</div>
+                </div>
+              </div>
+            </div>
+            <div class="team-section">
+              <div class="team-section-title"><span class="material-icons">groups</span>Meet the Team</div>
+              <div class="team-grid">
+                <div class="team-card reveal">
+                  <img src="Soniru.jpeg" class="team-avatar" alt="Soniru" onerror="this.outerHTML='<div class=\'team-avatar-placeholder\'><span class=\'material-icons\'>person</span></div>'"/>
+                  <div class="team-name">Soniru</div><div class="team-role">🎮 Owner &amp; Gamer</div>
+                  <div class="team-socials">
+                    <a href="https://instagram.com/soniru" target="_blank" class="team-social-btn ig"><span class="material-icons">photo_camera</span>Instagram</a>
+                    <a href="https://wa.me/" target="_blank" class="team-social-btn wa"><span class="material-icons">chat</span>WhatsApp</a>
+                  </div>
+                </div>
+                <div class="team-card reveal">
+                  <img src="Nethindu.jpeg" class="team-avatar" alt="Nethindu" onerror="this.outerHTML='<div class=\'team-avatar-placeholder\'><span class=\'material-icons\'>person</span></div>'"/>
+                  <div class="team-name">Nethindu</div><div class="team-role">💻 Designer &amp; Gamer</div>
+                  <div class="team-socials">
+                    <a href="https://instagram.com/nethindu_thaminda" target="_blank" class="team-social-btn ig"><span class="material-icons">photo_camera</span>Instagram</a>
+                    <a href="https://wa.me/+94775686166" target="_blank" class="team-social-btn wa"><span class="material-icons">chat</span>WhatsApp</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery">
+      <div class="container">
+        <div class="sec-header reveal">
+          <div class="sec-tag"><span class="material-icons" style="font-size:.8rem;">photo_library</span>Shorts Showcase</div>
+          <h2 class="sec-title">Latest Short Videos</h2>
+          <p class="sec-desc">Quick highlights, events, and promo drops.</p>
+        </div>
+        <div class="gallery-grid" id="gallery-grid">
+          <div class="gallery-yt-item" style="display:flex;align-items:center;justify-content:center;"><span class="material-icons" style="font-size:2rem;color:var(--text-muted);">hourglass_empty</span></div>
+          <div class="gallery-yt-item" style="display:flex;align-items:center;justify-content:center;"><span class="material-icons" style="font-size:2rem;color:var(--text-muted);">hourglass_empty</span></div>
+          <div class="gallery-yt-item" style="display:flex;align-items:center;justify-content:center;"><span class="material-icons" style="font-size:2rem;color:var(--text-muted);">hourglass_empty</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-logo">Mech<span>Strike</span></div>
+          <p class="footer-about">Your home for Mech Arena gaming — epic battles, pro strategies, and the best mech content on YouTube.<br><br>📧 mechstrikesl@gmail.com</p>
+        </div>
+        <div class="footer-col"><h4>Navigate</h4>
+          <ul>
+            <li><a href="#hero"><span class="material-icons">home</span>Home</a></li>
+            <li><a href="#videos"><span class="material-icons">smart_display</span>Videos</a></li>
+            <li><a href="#about"><span class="material-icons">info</span>About</a></li>
+            <li><a href="#gallery"><span class="material-icons">photo_library</span>Shorts</a></li>
+            <li><a href="promo.html"><span class="material-icons">redeem</span>Promo Codes</a></li>
+          </ul>
+        </div>
+        <div class="footer-col"><h4>Connect</h4>
+          <ul>
+            <li><a href="https://youtube.com/@mechstrike" target="_blank"><span class="material-icons">subscriptions</span>YouTube</a></li>
+            <li><a href="https://discord.com/users/939791412201934889" target="_blank"><span class="material-icons">forum</span>Discord</a></li>
+            <li><a href="https://instagram.com/nethindu_thaminda" target="_blank"><span class="material-icons">photo_camera</span>Instagram</a></li>
+            <li><a href="https://tiktok.com" target="_blank"><span class="material-icons">music_note</span>TikTok</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Mech Strike · All rights reserved</span>
+        <div class="footer-socials">
+          <a href="https://youtube.com/@mechstrike" target="_blank">YT</a>
+          <a href="https://discord.com/users/939791412201934889" target="_blank">DC</a>
+          <a href="https://instagram.com/nethindu_thaminda" target="_blank">IG</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    var YT_API_KEY='AIzaSyAIxKLOeypJ-dUvu5t7tBf1W2HPailRBzY';
+    var YT_HANDLE='mechstrike';
+    var REFRESH_MS=5*60*1000;
+    var _videoDataForDots=[];
+
+    /* LOADER */
+    var imgs=document.querySelectorAll('.loader-img');
+    var bar=document.getElementById('loader-bar');
+    var cur=0,tot=Math.max(imgs.length,1);
+    var _loaderDone=false;
+    function showNext(){
+      imgs.forEach(function(i){i.classList.remove('active')});
+      if(imgs[cur])imgs[cur].classList.add('active');
+      cur++;bar.style.width=Math.min((cur/tot)*100,100)+'%';
+    }
+    showNext();
+    var loaderInt=setInterval(function(){
+      if(cur>=tot){
+        clearInterval(loaderInt);
+        setTimeout(function(){
+          document.getElementById('loader').classList.add('hidden');
+          _loaderDone=true;
+          // Animate polygon AFTER loader finishes
+          if(_polyData&&_polyData.length){
+            setTimeout(function(){drawFrequencyPolygon(_polyData)},400);
+          }
+        },500);
+      } else showNext();
+    },400);
+
+    /* PANEL */
+    function togglePanel(){document.getElementById('side-panel').classList.toggle('open');document.getElementById('panel-overlay').classList.toggle('open')}
+    function closePanel(){document.getElementById('side-panel').classList.remove('open');document.getElementById('panel-overlay').classList.remove('open')}
+
+    /* THEME */
+    function toggleTheme(){
+      var h=document.documentElement;var d=h.getAttribute('data-theme')==='dark';
+      h.setAttribute('data-theme',d?'light':'dark');
+      document.getElementById('theme-icon').textContent=d?'light_mode':'dark_mode';
+      document.getElementById('theme-label').textContent=d?'Dark':'Light';
+      if(_polyData&&_polyData.length&&_loaderDone)setTimeout(function(){drawFrequencyPolygon(_polyData)},100);
+    }
+
+    /* REVEAL */
+    var revealObs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.08});
+    function observeReveal(){document.querySelectorAll('.reveal:not(.visible)').forEach(function(el){revealObs.observe(el)})}
+    observeReveal();
+
+    /* HELPERS */
+    function formatNum(n){n=parseInt(n);if(isNaN(n))return'—';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return n.toString()}
+    function timeAgo(d){var s=(Date.now()-new Date(d))/1000;if(s<60)return'Just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';if(s<604800)return Math.floor(s/86400)+'d ago';if(s<2592000)return Math.floor(s/604800)+'w ago';return Math.floor(s/2592000)+'mo ago'}
+    function fmtDur(iso){if(!iso)return'';var m=iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);if(!m)return'';var h=+m[1]||0,mi=+m[2]||0,s=+m[3]||0;return h?h+':'+String(mi).padStart(2,'0')+':'+String(s).padStart(2,'0'):mi+':'+String(s).padStart(2,'0')}
+    function isShort(dur){if(!dur)return false;var m=dur.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);if(!m)return false;var h=+m[1]||0,mi=+m[2]||0,s=+m[3]||0;return h===0&&(mi<1||(mi===1&&s===0))}
+
+    /* DOT TOOLTIP */
+    var fpTooltip=document.getElementById('fp-tooltip');
+    function showDotTooltip(e,index){
+      var data=_videoDataForDots[index];
+      if(!data)return;
+      document.getElementById('fp-tooltip-img').src=data.thumb;
+      document.getElementById('fp-tooltip-title').textContent=data.title;
+      document.getElementById('fp-tooltip-views').textContent=formatNum(data.views)+' views';
+      fpTooltip.classList.add('visible');
+      var x=e.clientX+15,y=e.clientY-10;
+      if(x+210>window.innerWidth)x=e.clientX-215;
+      if(y+120>window.innerHeight)y=e.clientY-130;
+      if(y<0)y=10;
+      fpTooltip.style.left=x+'px';
+      fpTooltip.style.top=y+'px';
+    }
+    function hideDotTooltip(){fpTooltip.classList.remove('visible')}
+    document.addEventListener('mousemove',function(e){
+      if(fpTooltip.classList.contains('visible')){
+        var x=e.clientX+15,y=e.clientY-10;
+        if(x+210>window.innerWidth)x=e.clientX-215;
+        if(y<0)y=10;
+        fpTooltip.style.left=x+'px';fpTooltip.style.top=y+'px';
+      }
+    });
+
+    /* FREQUENCY POLYGON */
+    var _polyData=null,_polyAnimated=false;
+    function drawFrequencyPolygon(vc){
+      _polyData=vc;
+      // Only animate after loader is done
+      if(!_loaderDone)return;
+      var svg=document.getElementById('freq-poly-bg'),hero=document.getElementById('hero');
+      if(!svg||!hero)return;
+      var r=hero.getBoundingClientRect(),W=Math.round(r.width)||window.innerWidth,H=Math.round(r.height)||window.innerHeight;
+      svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox','0 0 '+W+' '+H);
+      svg.style.width=W+'px';svg.style.height=H+'px';
+      var maxV=Math.max.apply(null,vc.concat([1])),minV=Math.min.apply(null,vc.concat([0])),range=maxV-minV||1;
+      var ML=W*.06,TY=H*.20,FY=H*.85,DW=W-ML*2,n=vc.length;
+      var pts=[];
+      for(var i=0;i<n;i++){pts.push({x:ML+(n===1?DW/2:(i/(n-1))*DW),y:FY-((vc[i]-minV)/range)*(FY-TY)})}
+      var lp='M'+pts[0].x.toFixed(1)+','+pts[0].y.toFixed(1);
+      for(var j=1;j<pts.length;j++)lp+=' L'+pts[j].x.toFixed(1)+','+pts[j].y.toFixed(1);
+      var ap='M'+ML.toFixed(1)+','+FY.toFixed(1);
+      for(var k=0;k<pts.length;k++)ap+=' L'+pts[k].x.toFixed(1)+','+pts[k].y.toFixed(1);
+      ap+=' L'+(ML+DW).toFixed(1)+','+FY.toFixed(1)+' Z';
+      document.getElementById('fp-area').setAttribute('d',ap);
+      document.getElementById('fp-glow').setAttribute('d',lp);
+      document.getElementById('fp-line').setAttribute('d',lp);
+      var dg=document.getElementById('fp-dots');dg.innerHTML='';
+      for(var d=0;d<pts.length;d++){
+        var p=pts[d],dl=.8+d*.15;
+        var o=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        o.setAttribute('cx',p.x.toFixed(1));o.setAttribute('cy',p.y.toFixed(1));o.setAttribute('r','8');
+        o.setAttribute('class','fp-dot-outer');o.style.opacity='0';o.style.transition='opacity .5s ease '+dl+'s';
+        dg.appendChild(o);
+        var dt=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        dt.setAttribute('cx',p.x.toFixed(1));dt.setAttribute('cy',p.y.toFixed(1));dt.setAttribute('r','4');
+        dt.setAttribute('class','fp-dot');dt.style.opacity='0';dt.style.transition='opacity .5s ease '+dl+'s';
+        dg.appendChild(dt);
+        // Invisible larger hover circle
+        var hc=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        hc.setAttribute('cx',p.x.toFixed(1));hc.setAttribute('cy',p.y.toFixed(1));hc.setAttribute('r','18');
+        hc.setAttribute('class','fp-dot-hover');hc.style.pointerEvents='all';
+        (function(idx){
+          hc.addEventListener('mouseenter',function(ev){showDotTooltip(ev,idx)});
+          hc.addEventListener('mouseleave',hideDotTooltip);
+        })(d);
+        dg.appendChild(hc);
+      }
+      var le=document.getElementById('fp-line'),ge=document.getElementById('fp-glow'),ae=document.getElementById('fp-area');
+      var tl=6000;try{tl=Math.ceil(le.getTotalLength())+50}catch(e){}
+      le.style.transition='none';ge.style.transition='none';
+      le.style.strokeDasharray=tl;le.style.strokeDashoffset=tl;
+      ge.style.strokeDasharray=tl;ge.style.strokeDashoffset=tl;
+      ae.style.opacity='0';ae.style.transition='none';
+      void le.getBoundingClientRect();
+      requestAnimationFrame(function(){requestAnimationFrame(function(){
+        le.style.transition='stroke-dashoffset 2s cubic-bezier(.4,0,.2,1) .2s';
+        ge.style.transition='stroke-dashoffset 2.5s cubic-bezier(.4,0,.2,1) .1s';
+        le.style.strokeDashoffset='0';ge.style.strokeDashoffset='0';
+        dg.querySelectorAll('.fp-dot,.fp-dot-outer').forEach(function(c){c.style.opacity='1'});
+        ae.style.transition='opacity 1s ease 1.5s';
+        requestAnimationFrame(function(){ae.style.opacity='.2'});
+      })});
+      _polyAnimated=true;
+    }
+    var _rt=null;
+    window.addEventListener('resize',function(){clearTimeout(_rt);_rt=setTimeout(function(){if(_polyData&&_polyData.length&&_loaderDone)drawFrequencyPolygon(_polyData)},200)});
+
+    /* YOUTUBE FETCH */
+    async function fetchChannelData(){
+      try{
+        var cr=await fetch('https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&forHandle='+YT_HANDLE+'&key='+YT_API_KEY);
+        var cd=await cr.json();
+        if(cd.error){console.error('YT:',cd.error);document.getElementById('stats-status').textContent='⚠ API error';return}
+        if(!cd.items||!cd.items.length){document.getElementById('stats-status').textContent='⚠ Channel not found';return}
+        var ch=cd.items[0],st=ch.statistics,cid=ch.id;
+        ['sub-count','view-count','video-count'].forEach(function(id){document.getElementById(id).classList.remove('stat-loading')});
+        document.getElementById('sub-count').textContent=formatNum(st.subscriberCount);
+        document.getElementById('view-count').textContent=formatNum(st.viewCount);
+        document.getElementById('video-count').textContent=formatNum(st.videoCount);
+        document.getElementById('about-badge-num').textContent=formatNum(st.subscriberCount);
+        document.getElementById('stats-status').innerHTML='✅ Updated: '+new Date().toLocaleTimeString();
+        document.getElementById('hero-subs').textContent=formatNum(st.subscriberCount);
+        document.getElementById('hero-vids').textContent=formatNum(st.videoCount);
+
+        // Set channel banner as about image
+        var bannerUrl=ch.snippet&&ch.snippet.thumbnails&&ch.snippet.thumbnails.high?ch.snippet.thumbnails.high.url:'';
+        if(bannerUrl){
+          var abImg=document.getElementById('about-hero-img');
+          abImg.innerHTML='<img src="'+bannerUrl+'" alt="Mech Strike" onerror="this.parentElement.innerHTML=\'<span class=\\\'material-icons\\\' style=\\\'font-size:4rem;color:var(--accent);opacity:.5\\\'>sports_esports</span>\'" />';
+        }
+
+        var sr=await fetch('https://www.googleapis.com/youtube/v3/search?part=snippet&channelId='+cid+'&maxResults=10&order=date&type=video&key='+YT_API_KEY);
+        var sd=await sr.json();var items=sd.items||[];
+        if(!items.length)return;
+        var ids=items.map(function(v){return v.id.videoId}).join(',');
+        var dr=await fetch('https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id='+ids+'&key='+YT_API_KEY);
+        var dd=await dr.json();var det={};
+        (dd.items||[]).forEach(function(d){det[d.id]=d});
+
+        // Polygon data with video info for dot tooltips
+        var polyItems=items.slice(0,6);
+        _videoDataForDots=polyItems.map(function(v){
+          var d=det[v.id.videoId];
+          var s=v.snippet;
+          var thumb=(s.thumbnails&&s.thumbnails.medium?s.thumbnails.medium.url:'')||(s.thumbnails&&s.thumbnails.high?s.thumbnails.high.url:'');
+          return{
+            title:s.title,
+            thumb:thumb,
+            views:parseInt(d&&d.statistics?d.statistics.viewCount:0)||0
+          };
+        });
+        var p6=_videoDataForDots.map(function(v){return v.views});
+        _polyData=p6;
+        if(_loaderDone&&p6.some(function(v){return v>0})){
+          drawFrequencyPolygon(p6);
+        }
+
+        // Bar chart
+        var cb=document.getElementById('chart-bars');
+        if(cb){
+          var ci=items.slice(0,8),cvs=ci.map(function(v){var d=det[v.id.videoId];return parseInt(d&&d.statistics?d.statistics.viewCount:0)||0});
+          var mx=Math.max.apply(null,cvs.concat([1]));cb.innerHTML='';
+          ci.forEach(function(v,i){
+            var vc=cvs[i],pc=Math.max((vc/mx)*100,4),lb=v.snippet.title.slice(0,10)+(v.snippet.title.length>10?'…':'');
+            var w=document.createElement('div');w.className='chart-bar-wrap';
+            w.innerHTML='<div class="chart-bar" style="height:0%" data-pct="'+pc+'"><div class="chart-bar-tooltip">'+formatNum(vc)+' views</div></div><div class="chart-bar-label" title="'+v.snippet.title.replace(/"/g,'&quot;')+'">'+lb+'</div>';
+            cb.appendChild(w);
+          });
+          requestAnimationFrame(function(){setTimeout(function(){cb.querySelectorAll('.chart-bar').forEach(function(b){b.style.height=b.dataset.pct+'%'})},300)});
+        }
+
+        // Videos grid
+        var grid=document.getElementById('videos-grid');grid.innerHTML='';
+        items.forEach(function(v){
+          var vid=v.id.videoId,s=v.snippet;
+          var thumb=(s.thumbnails&&s.thumbnails.high?s.thumbnails.high.url:'')||(s.thumbnails&&s.thumbnails.medium?s.thumbnails.medium.url:'')||(s.thumbnails&&s.thumbnails['default']?s.thumbnails['default'].url:'');
+          var d=det[vid]||{},dur=fmtDur(d.contentDetails?d.contentDetails.duration:'');
+          var views=formatNum(d.statistics?d.statistics.viewCount:0),likes=formatNum(d.statistics?d.statistics.likeCount:0);
+          var sh=isShort(d.contentDetails?d.contentDetails.duration:'');
+          var card=document.createElement('div');card.className='video-card reveal';
+          card.innerHTML='<div class="video-embed" id="ve-'+vid+'"><div class="video-thumb-wrap" onclick="playVideo(\''+vid+'\')"><img src="'+thumb+'" alt="'+s.title.replace(/"/g,'&quot;')+'" loading="lazy"/><div class="video-play-btn"><span class="material-icons">play_circle_filled</span></div>'+(sh?'<div class="video-shorts-badge">Short</div>':'')+(dur&&!sh?'<div class="video-duration">'+dur+'</div>':'')+'</div></div><div class="video-info"><div class="video-title">'+s.title+'</div><div class="video-meta">'+(views!=='—'?'<span><span class="material-icons">visibility</span>'+views+'</span>':'')+(likes!=='—'?'<span><span class="material-icons">thumb_up</span>'+likes+'</span>':'')+'<span><span class="material-icons">schedule</span>'+timeAgo(s.publishedAt)+'</span></div></div>';
+          grid.appendChild(card);
+        });
+
+        // Gallery
+        var gg=document.getElementById('gallery-grid');gg.innerHTML='';
+        var shorts=items.filter(function(v){var d=det[v.id.videoId];return isShort(d&&d.contentDetails?d.contentDetails.duration:'')});
+        var gi=shorts.length>=3?shorts:items;
+        gi.slice(0,6).forEach(function(v){
+          var vid=v.id.videoId,s=v.snippet;
+          var thumb=(s.thumbnails&&s.thumbnails.high?s.thumbnails.high.url:'')||(s.thumbnails&&s.thumbnails.medium?s.thumbnails.medium.url:'')||(s.thumbnails&&s.thumbnails['default']?s.thumbnails['default'].url:'');
+          var d=det[vid],sh=isShort(d&&d.contentDetails?d.contentDetails.duration:'');
+          var item=document.createElement('div');item.className='gallery-yt-item reveal';
+          item.innerHTML=(sh?'<div class="gallery-shorts-label">Short</div>':'')+'<img src="'+thumb+'" alt="'+s.title.replace(/"/g,'&quot;')+'" loading="lazy"/>';
+          (function(vi,is){item.addEventListener('click',function(){window.open(is?'https://youtube.com/shorts/'+vi:'https://youtube.com/watch?v='+vi,'_blank')})})(vid,sh);
+          gg.appendChild(item);
+        });
+        observeReveal();updateVideoGridCols();
+      }catch(err){
+        console.error('YT error:',err);
+        document.getElementById('stats-status').textContent='⚠ Could not load — check console';
+        _polyData=[3,8,2,10,5,7];
+        _videoDataForDots=[
+          {title:'Video 1',thumb:'',views:3},{title:'Video 2',thumb:'',views:8},
+          {title:'Video 3',thumb:'',views:2},{title:'Video 4',thumb:'',views:10},
+          {title:'Video 5',thumb:'',views:5},{title:'Video 6',thumb:'',views:7}
+        ];
+        if(_loaderDone)drawFrequencyPolygon(_polyData);
+      }
+    }
+
+    function playVideo(id){var w=document.getElementById('ve-'+id);if(w)w.innerHTML='<iframe src="https://www.youtube.com/embed/'+id+'?autoplay=1" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>'}
+
+    function updateVideoGridCols(){
+      var g=document.getElementById('videos-grid');if(!g)return;
+      var w=g.offsetWidth,c=w>=960?3:w>=560?2:1;
+      g.style.gridTemplateColumns='repeat('+c+',1fr)';
+      var cards=g.querySelectorAll('.video-card'),t=cards.length,s=t<=c?t:Math.floor(t/c)*c;
+      cards.forEach(function(cd,i){cd.style.display=i<s?'':'none'});
+    }
+    var _grt=null;window.addEventListener('resize',function(){clearTimeout(_grt);_grt=setTimeout(updateVideoGridCols,150)});
+
+    fetchChannelData();
+    setInterval(fetchChannelData,REFRESH_MS);
+  </script>
+</body>
+</html>

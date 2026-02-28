@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Promo Codes — Mech Strike</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <style>
+    :root {
+      --brand-red:#e01c1c;--brand-red-light:#ff3a3a;--brand-red-dark:#9a0f0f;
+      --brand-black:#0a0a0a;--brand-black-card:#1a1a1a;--brand-black-soft:#242424;
+      --bg:var(--brand-black);--bg-card:var(--brand-black-card);--bg-soft:var(--brand-black-soft);
+      --text:#f0f0f0;--text-muted:#888;--accent:var(--brand-red);
+      --accent-glow:rgba(224,28,28,.35);--border:rgba(255,255,255,.07);
+      --panel-bg:#111;--panel-w:280px;
+      --font:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif;
+      --radius:12px;--transition:.3s cubic-bezier(.4,0,.2,1);
+    }
+    [data-theme="light"]{
+      --bg:#f5f5f5;--bg-card:#fff;--bg-soft:#ebebeb;--text:#111;
+      --text-muted:#555;--border:rgba(0,0,0,.08);--panel-bg:#fff;
+      --accent-glow:rgba(224,28,28,.18);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:hidden;transition:background var(--transition),color var(--transition);-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    button,input{font-family:var(--font);}
+    img{max-width:100%;display:block;}
+    ul{list-style:none;}
+
+    /* PANEL */
+    #panel-overlay{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity var(--transition)}
+    #panel-overlay.open{opacity:1;pointer-events:all}
+    #side-panel{position:fixed;left:0;top:0;bottom:0;width:var(--panel-w);max-width:85vw;background:var(--panel-bg);border-right:1px solid var(--border);z-index:800;transform:translateX(-100%);transition:transform var(--transition);display:flex;flex-direction:column;padding:24px 0;overflow-y:auto;}
+    #side-panel.open{transform:translateX(0)}
+    .panel-header{padding:0 24px 24px;border-bottom:1px solid var(--border)}
+    .panel-logo{font-size:1.4rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+    .panel-logo span{color:var(--text)}
+    .panel-tagline{font-size:.7rem;color:var(--text-muted);margin-top:4px;letter-spacing:.1em;text-transform:uppercase}
+    .panel-nav{flex:1;padding:20px 0}
+    .panel-nav li a{display:flex;align-items:center;gap:14px;padding:12px 24px;font-size:.9rem;font-weight:500;color:var(--text-muted);transition:color var(--transition),background var(--transition);border-left:3px solid transparent}
+    .panel-nav li a:hover,.panel-nav li a.active{color:var(--accent);background:rgba(224,28,28,.07);border-left-color:var(--accent)}
+    .panel-nav li a .material-icons{font-size:1.1rem}
+    .panel-contact{padding:16px 24px;border-top:1px solid var(--border)}
+    .panel-contact-title{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+    .panel-contact-title .material-icons{font-size:.85rem}
+    .panel-contact-item{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:.78rem;color:var(--text-muted)}
+    .panel-contact-item .material-icons{font-size:.9rem;color:var(--accent)}
+    .panel-contact-item a{color:var(--brand-red-light);transition:color var(--transition)}
+    .panel-contact-item a:hover{color:var(--text)}
+    .panel-socials{padding:16px 24px 0;border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap}
+    .panel-socials a{width:38px;height:38px;border-radius:8px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:.9rem;font-weight:700;transition:background var(--transition),color var(--transition)}
+    .panel-socials a:hover{background:var(--accent);color:#fff}
+
+    /* NAVBAR */
+    #navbar{position:fixed;top:0;left:0;right:0;z-index:600;height:64px;display:flex;align-items:center;padding:0 16px;background:rgba(10,10,10,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);gap:10px;transition:background var(--transition)}
+    [data-theme="light"] #navbar{background:rgba(245,245,245,.9)}
+    .nav-menu-btn{background:none;border:none;color:var(--text);padding:4px;display:flex;align-items:center;transition:color var(--transition);flex-shrink:0;cursor:pointer;}
+    .nav-menu-btn:hover{color:var(--accent)}
+    .nav-menu-btn .material-icons{font-size:1.5rem}
+    .nav-logo{font-size:1.2rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);flex:1;}
+    .nav-logo span{color:var(--text)}
+    .nav-links{display:flex;gap:2px;align-items:center}
+    .nav-links a{font-size:.78rem;font-weight:600;padding:6px 10px;border-radius:8px;color:var(--text-muted);transition:all var(--transition);letter-spacing:.04em;white-space:nowrap;display:flex;align-items:center;gap:4px}
+    .nav-links a .material-icons{font-size:.9rem}
+    .nav-links a:hover,.nav-links a.active{color:var(--accent);background:rgba(224,28,28,.08)}
+    .nav-right{display:flex;gap:6px;align-items:center;flex-shrink:0}
+    #theme-btn{background:var(--bg-soft);border:1px solid var(--border);border-radius:99px;padding:6px 12px;display:flex;align-items:center;gap:5px;color:var(--text);font-size:.78rem;font-weight:600;transition:all var(--transition);cursor:pointer;}
+    #theme-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+    #theme-btn .material-icons{font-size:1rem}
+    .nav-sub-btn{display:inline-flex;align-items:center;gap:5px;background:var(--accent);color:#fff;padding:7px 14px;border-radius:var(--radius);font-weight:700;font-size:.78rem;transition:all var(--transition);box-shadow:0 4px 24px var(--accent-glow);}
+    .nav-sub-btn:hover{background:var(--brand-red-light);transform:translateY(-1px)}
+    .nav-sub-btn .material-icons{font-size:.95rem}
+
+    /* LAYOUT */
+    main{margin-top:64px}
+    .container{max-width:1000px;margin:0 auto;padding:0 20px}
+
+    /* PAGE HERO */
+    .page-hero{padding:64px 0 48px;text-align:center;position:relative;overflow:hidden;}
+    .page-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 0%,rgba(224,28,28,.15) 0%,transparent 70%);pointer-events:none;}
+    .page-hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(224,28,28,.12);border:1px solid rgba(224,28,28,.3);border-radius:99px;padding:6px 16px;font-size:.75rem;font-weight:600;color:var(--brand-red-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px;animation:fadeUp .5s ease both;}
+    .page-hero-badge .material-icons{font-size:.9rem}
+    .page-hero-title{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;letter-spacing:-.02em;line-height:1.1;animation:fadeUp .5s .08s ease both;}
+    .page-hero-title .accent{color:var(--accent);text-shadow:0 0 40px var(--accent-glow);}
+    .page-hero-desc{margin-top:12px;font-size:.92rem;color:var(--text-muted);animation:fadeUp .5s .16s ease both;}
+
+    /* NOTIFY BANNER */
+    .notify-banner{margin:0 auto 40px;max-width:520px;background:rgba(224,28,28,.08);border:1px solid rgba(224,28,28,.25);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;gap:14px;animation:fadeUp .5s .24s ease both;cursor:pointer;transition:background var(--transition),border-color var(--transition);}
+    .notify-banner:hover{background:rgba(224,28,28,.14);border-color:rgba(224,28,28,.45);}
+    .notify-bell{width:40px;height:40px;flex-shrink:0;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 16px var(--accent-glow);}
+    .notify-bell .material-icons{font-size:1.2rem}
+    .notify-text{flex:1}
+    .notify-title{font-size:.85rem;font-weight:700;color:var(--text);}
+    .notify-sub{font-size:.72rem;color:var(--text-muted);margin-top:2px;}
+    .notify-arrow{color:var(--accent)}
+    .notify-arrow .material-icons{font-size:1.1rem}
+
+    /* CODES GRID */
+    .codes-section{padding-bottom:80px;}
+    .codes-count{font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:24px;display:flex;align-items:center;gap:8px;}
+    .codes-count span{background:var(--accent);color:#fff;border-radius:99px;padding:2px 10px;font-size:.7rem;}
+    .codes-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+    /* CODE CARD */
+    .code-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:transform var(--transition),box-shadow var(--transition),border-color var(--transition);position:relative;overflow:hidden;animation:fadeUp .5s ease both;}
+    .code-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--brand-red-dark),var(--brand-red-light));opacity:0;transition:opacity var(--transition);}
+    .code-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4),0 0 0 1px rgba(224,28,28,.2);border-color:rgba(224,28,28,.2);}
+    .code-card:hover::before{opacity:1;}
+    .code-card.copied{border-color:rgba(34,197,94,.4);box-shadow:0 0 0 1px rgba(34,197,94,.3);}
+    .code-card.copied::before{background:linear-gradient(90deg,#16a34a,#22c55e);opacity:1;}
+
+    .code-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;}
+    .code-value{font-size:1.05rem;font-weight:800;letter-spacing:.08em;color:var(--text);font-family:'SF Mono','Fira Code','Roboto Mono',monospace;}
+    .copy-btn{display:inline-flex;align-items:center;gap:5px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:.75rem;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:all var(--transition);white-space:nowrap;flex-shrink:0;box-shadow:0 2px 12px var(--accent-glow);}
+    .copy-btn:hover{background:var(--brand-red-light);transform:scale(1.04);}
+    .copy-btn.copied{background:#16a34a;box-shadow:0 2px 12px rgba(34,197,94,.4);}
+    .copy-btn .material-icons{font-size:.85rem;}
+
+    .code-rewards{display:flex;flex-direction:column;gap:6px;}
+    .reward-item{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text-muted);line-height:1.4;}
+    .reward-item::before{content:'→';color:var(--accent);font-weight:700;flex-shrink:0;font-size:.8rem;}
+    .reward-item strong{color:var(--text);font-weight:600;}
+
+    /* TOAST */
+    #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg-card);border:1px solid rgba(34,197,94,.4);border-radius:var(--radius);padding:12px 20px;font-size:.82rem;font-weight:600;color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:9999;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s ease;opacity:0;display:flex;align-items:center;gap:8px;pointer-events:none;white-space:nowrap;}
+    #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+    #toast .material-icons{color:#22c55e;font-size:1rem;}
+
+    /* FOOTER */
+    footer{background:var(--brand-black);border-top:1px solid var(--border);padding:60px 0 40px}
+    [data-theme="light"] footer{background:var(--bg-card)}
+    .footer-inner{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:48px;margin-bottom:48px}
+    .footer-logo{font-size:1.5rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+    .footer-logo span{color:var(--text)}
+    .footer-about{font-size:.85rem;color:var(--text-muted);line-height:1.6}
+    .footer-col h4{font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+    .footer-col ul li{margin-bottom:10px}
+    .footer-col ul li a{font-size:.85rem;color:var(--text-muted);transition:color var(--transition);display:flex;align-items:center;gap:6px}
+    .footer-col ul li a .material-icons{font-size:.9rem}
+    .footer-col ul li a:hover{color:var(--accent)}
+    .footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;align-items:center;justify-content:space-between;font-size:.78rem;color:var(--text-muted);flex-wrap:wrap;gap:12px}
+    .footer-socials{display:flex;gap:10px}
+    .footer-socials a{width:36px;height:36px;border-radius:8px;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:.8rem;font-weight:700;transition:all var(--transition)}
+    .footer-socials a:hover{background:var(--accent);color:#fff}
+
+    /* ANIMATIONS */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--brand-red-dark);border-radius:99px}
+
+    @media(max-width:700px){
+      .codes-grid{grid-template-columns:1fr;}
+      .footer-inner{grid-template-columns:1fr 1fr;}
+      .nav-links{display:none;}
+    }
+    @media(max-width:500px){
+      .footer-inner{grid-template-columns:1fr;}
+      #navbar{padding:0 10px;gap:6px;}
+      .nav-sub-btn .sub-text{display:none}.nav-sub-btn{padding:7px 9px;}
+      #theme-btn .theme-label-text{display:none;} #theme-btn{padding:6px 8px;}
+      .code-value{font-size:.9rem;}
+    }
+  </style>
+</head>
+<body>
+
+  <div id="panel-overlay" onclick="closePanel()"></div>
+
+  <!-- SIDE PANEL -->
+  <nav id="side-panel">
+    <div class="panel-header">
+      <div class="panel-logo">Mech<span>Strike</span></div>
+      <div class="panel-tagline">Mech Arena Gaming</div>
+    </div>
+    <ul class="panel-nav">
+      <li><a href="index.html"><span class="material-icons">home</span>Home</a></li>
+      <li><a href="index.html#stats"><span class="material-icons">bar_chart</span>Stats</a></li>
+      <li><a href="index.html#videos"><span class="material-icons">smart_display</span>Videos</a></li>
+      <li><a href="index.html#about"><span class="material-icons">info</span>About</a></li>
+      <li><a href="index.html#gallery"><span class="material-icons">photo_library</span>Shorts</a></li>
+      <li><a href="promo.html" class="active"><span class="material-icons">redeem</span>Promo Codes</a></li>
+      <li><a href="https://youtube.com/@mechstrike" target="_blank"><span class="material-icons">subscriptions</span>Subscribe</a></li>
+    </ul>
+    <div class="panel-contact">
+      <div class="panel-contact-title"><span class="material-icons">contact_mail</span>Contact Us</div>
+      <div class="panel-contact-item"><span class="material-icons">email</span><a href="mailto:mechstrikesl@gmail.com">mechstrikesl@gmail.com</a></div>
+      <div class="panel-contact-item"><span class="material-icons">forum</span><a href="https://discord.com/users/939791412201934889" target="_blank">Discord</a></div>
+      <div class="panel-contact-item"><span class="material-icons">photo_camera</span><a href="https://instagram.com/nethindu_thaminda" target="_blank">Instagram</a></div>
+      <div class="panel-contact-item"><span class="material-icons">chat</span><a href="https://wa.me/+94775686166" target="_blank">WhatsApp</a></div>
+    </div>
+    <div class="panel-socials">
+      <a href="https://youtube.com/@mechstrike" target="_blank" title="YouTube">YT</a>
+      <a href="https://discord.com/users/939791412201934889" target="_blank" title="Discord">DC</a>
+      <a href="https://instagram.com/nethindu_thaminda" target="_blank" title="Instagram">IG</a>
+      <a href="https://tiktok.com" target="_blank" title="TikTok">TK</a>
+    </div>
+  </nav>
+
+  <!-- NAVBAR -->
+  <header id="navbar">
+    <button class="nav-menu-btn" onclick="togglePanel()" aria-label="Menu">
+      <span class="material-icons">menu</span>
+    </button>
+    <div class="nav-logo">Mech<span>Strike</span></div>
+    <nav class="nav-links">
+      <a href="index.html"><span class="material-icons">home</span>Home</a>
+      <a href="index.html#videos"><span class="material-icons">smart_display</span>Videos</a>
+      <a href="index.html#about"><span class="material-icons">info</span>About</a>
+      <a href="index.html#gallery"><span class="material-icons">photo_library</span>Shorts</a>
+      <a href="promo.html" class="active"><span class="material-icons">redeem</span>Promos</a>
+    </nav>
+    <div class="nav-right">
+      <button id="theme-btn" onclick="toggleTheme()">
+        <span class="material-icons" id="theme-icon">dark_mode</span>
+        <span class="theme-label-text" id="theme-label">Light</span>
+      </button>
+      <a href="https://youtube.com/@mechstrike" target="_blank" class="nav-sub-btn">
+        <span class="material-icons">subscriptions</span><span class="sub-text">Subscribe</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="page-hero-bg"></div>
+      <div class="container">
+        <div class="page-hero-badge"><span class="material-icons">redeem</span>Free Rewards</div>
+        <h1 class="page-hero-title">Active <span class="accent">Promo Codes</span> 🎁</h1>
+        <p class="page-hero-desc">Redeem these codes in Mech Arena for free rewards. Updated regularly!</p>
+
+        <div class="notify-banner" onclick="window.open('https://youtube.com/@mechstrike','_blank')">
+          <div class="notify-bell"><span class="material-icons">notifications_active</span></div>
+          <div class="notify-text">
+            <div class="notify-title">🔔 Enable Promo Notifications</div>
+            <div class="notify-sub">Subscribe & hit the bell on YouTube to get new codes first</div>
+          </div>
+          <div class="notify-arrow"><span class="material-icons">arrow_forward_ios</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="codes-section">
+      <div class="container">
+        <div class="codes-count">Active Codes <span id="code-count">9</span></div>
+        <div class="codes-grid" id="codes-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-logo">Mech<span>Strike</span></div>
+          <p class="footer-about">Your home for Mech Arena gaming — epic battles, pro strategies, and the best mech content on YouTube.<br><br>📧 mechstrikesl@gmail.com</p>
+        </div>
+        <div class="footer-col"><h4>Navigate</h4>
+          <ul>
+            <li><a href="index.html"><span class="material-icons">home</span>Home</a></li>
+            <li><a href="index.html#videos"><span class="material-icons">smart_display</span>Videos</a></li>
+            <li><a href="index.html#about"><span class="material-icons">info</span>About</a></li>
+            <li><a href="index.html#gallery"><span class="material-icons">photo_library</span>Shorts</a></li>
+            <li><a href="promo.html"><span class="material-icons">redeem</span>Promo Codes</a></li>
+          </ul>
+        </div>
+        <div class="footer-col"><h4>Connect</h4>
+          <ul>
+            <li><a href="https://youtube.com/@mechstrike" target="_blank"><span class="material-icons">subscriptions</span>YouTube</a></li>
+            <li><a href="https://discord.com/users/939791412201934889" target="_blank"><span class="material-icons">forum</span>Discord</a></li>
+            <li><a href="https://instagram.com/nethindu_thaminda" target="_blank"><span class="material-icons">photo_camera</span>Instagram</a></li>
+            <li><a href="https://tiktok.com" target="_blank"><span class="material-icons">music_note</span>TikTok</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Mech Strike · All rights reserved</span>
+        <div class="footer-socials">
+          <a href="https://youtube.com/@mechstrike" target="_blank">YT</a>
+          <a href="https://discord.com/users/939791412201934889" target="_blank">DC</a>
+          <a href="https://instagram.com/nethindu_thaminda" target="_blank">IG</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div id="toast"><span class="material-icons">check_circle</span><span id="toast-msg">Copied!</span></div>
+
+  <script>
+    var CODES = [
+      {
+        code: 'DISCORD100K',
+        rewards: ['500 A-Coins', '50K Credits', 'Party Suit Skin (Lancer)']
+      },
+      {
+        code: 'HOLIDAYMECH',
+        rewards: ['300 A-Coins', '100K Credits', 'Amateur Crate', 'Slay Ride Skin (Killshot)']
+      },
+      {
+        code: 'MIDSNOWGAME',
+        rewards: ['100K Credits', 'Prodigy Crate', 'Amateur Crate', 'Gold Crate']
+      },
+      {
+        code: 'MIDGAMESNOW',
+        rewards: ['100K Credits', 'Prodigy Crate', 'Amateur Crate', 'Gold Crate']
+      },
+      {
+        code: '2GTSNOW',
+        rewards: ['200 A-Coins', '100K Credits', 'Amateur Crate']
+      },
+      {
+        code: 'KASPER',
+        rewards: ['300 A-Coins', '40K Credits', '800 Implant Parts']
+      },
+      {
+        code: 'MIDRUSHGAME',
+        rewards: ['100K Credits', 'Gold Crate', 'Amateur Crate', 'Prodigy Crate']
+      },
+      {
+        code: 'FOR42OLDS',
+        rewards: ['242 A-Coins', '42K Credits', '420 Implant Parts']
+      },
+      {
+        code: 'MIDGAMEYOUTUBECHANNEL',
+        rewards: ['100K Credits', '100 A-Coins', 'Gold Crate', 'Amateur Crate', 'Prodigy Crate']
+      }
+    ];
+
+    document.getElementById('code-count').textContent = CODES.length;
+
+    var grid = document.getElementById('codes-grid');
+    CODES.forEach(function(c, idx) {
+      var card = document.createElement('div');
+      card.className = 'code-card';
+      card.style.animationDelay = (idx * 0.06) + 's';
+      var rewardsHtml = c.rewards.map(function(r) {
+        return '<div class="reward-item"><strong>' + r + '</strong></div>';
+      }).join('');
+      card.innerHTML =
+        '<div class="code-top">' +
+          '<span class="code-value">' + c.code + '</span>' +
+          '<button class="copy-btn" onclick="copyCode(this,\'' + c.code + '\')">' +
+            '<span class="material-icons">content_copy</span>Copy' +
+          '</button>' +
+        '</div>' +
+        '<div class="code-rewards">' + rewardsHtml + '</div>';
+      grid.appendChild(card);
+    });
+
+    var toastTimer;
+    function copyCode(btn, code) {
+      navigator.clipboard.writeText(code).then(function() {
+        btn.innerHTML = '<span class="material-icons">check</span>Copied!';
+        btn.classList.add('copied');
+        var card = btn.closest('.code-card');
+        card.classList.add('copied');
+        showToast('✅ ' + code + ' copied!');
+        setTimeout(function() {
+          btn.innerHTML = '<span class="material-icons">content_copy</span>Copy';
+          btn.classList.remove('copied');
+          card.classList.remove('copied');
+        }, 2500);
+      }).catch(function() {
+        // Fallback
+        var ta = document.createElement('textarea');
+        ta.value = code; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('✅ ' + code + ' copied!');
+      });
+    }
+
+    function showToast(msg) {
+      var t = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2500);
+    }
+
+    function togglePanel() {
+      document.getElementById('side-panel').classList.toggle('open');
+      document.getElementById('panel-overlay').classList.toggle('open');
+    }
+    function closePanel() {
+      document.getElementById('side-panel').classList.remove('open');
+      document.getElementById('panel-overlay').classList.remove('open');
+    }
+    function toggleTheme() {
+      var h = document.documentElement, d = h.getAttribute('data-theme') === 'dark';
+      h.setAttribute('data-theme', d ? 'light' : 'dark');
+      document.getElementById('theme-icon').textContent = d ? 'light_mode' : 'dark_mode';
+      document.getElementById('theme-label').textContent = d ? 'Dark' : 'Light';
+    }
+  </script>
+</body>
+</html>
