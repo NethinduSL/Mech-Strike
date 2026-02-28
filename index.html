@@ -830,7 +830,7 @@
         document.getElementById('hero-vids').textContent=formatNum(st.videoCount);
 
         // Set channel banner as about image
-        var bannerUrl=ch.snippet&&ch.snippet.thumbnails&&ch.snippet.thumbnails.high?ch.snippet.thumbnails.high.url:'';
+        var bannerUrl="banner.png";
         if(bannerUrl){
           var abImg=document.getElementById('about-hero-img');
           abImg.innerHTML='<img src="'+bannerUrl+'" alt="Mech Strike" onerror="this.parentElement.innerHTML=\'<span class=\\\'material-icons\\\' style=\\\'font-size:4rem;color:var(--accent);opacity:.5\\\'>sports_esports</span>\'" />';
